@@ -11,20 +11,25 @@ uv sync
 ## 运行
 
 ```bash
-uv run uvicorn main:app --reload --port 8000
+uv run uvicorn app.main:app --reload --port 8000
 ```
 
-## 使用
+## API 文档
 
-访问 `http://localhost:8000/docs` 查看 API 文档。
+访问 `http://localhost:8000/docs`
 
-### 查询单词资源
+## API 端点
 
-```
-GET /resources/{word}
-```
+| 端点 | 说明 |
+|------|------|
+| `GET /api/v1/` | 服务状态 |
+| `GET /api/v1/health` | 健康检查 |
+| `GET /api/v1/resources/{word}` | 查询单词发音资源 |
+| `GET /api/v1/resources/search/{pattern}` | 搜索资源键名 |
 
-示例:
-```
-GET /resources/hello
+## 示例
+
+```bash
+# 查询 hello 的发音资源
+curl http://localhost:8000/api/v1/resources/hello
 ```
