@@ -28,8 +28,12 @@ class MDDService:
         try:
             from readmdict import MDD
 
+            logger.info(f"MDD resource_dir: {settings.resource_dir}")
+            logger.info(f"MDD db_dir: {settings.db_dir}")
+            logger.info(f"MDD files to load: {settings.mdd_files}")
+
             for filename in settings.mdd_files:
-                filepath = settings.mdd_dir / filename
+                filepath = settings.resource_dir / filename
                 if filepath.exists():
                     logger.info(f"Loading MDD file: {filepath}")
                     mdd = MDD(str(filepath))

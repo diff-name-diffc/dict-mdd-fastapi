@@ -7,30 +7,35 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.api.v1.router import api_router
-from app.services import MDDService
+from app.services import MDDService, DatabaseService
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
 logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifecycle - preload MDD files on startup"""
+    """Application lifecycle - preload MDD files and initialize databases on startup"""
     logger.info("Starting MDD API service...")
 
-    success = MDDService.load_mdd_files()
-    if success:
+    # Load MDD files
+    mdd_success = MDDService.load_mdd_files()
+    if mdd_success:
         logger.info("MDD files loaded successfully")
     else:
-        logger.warning("Failed to load MDD files - service may not work properly")
+        logger.warning("Failed to load MDD files - pronunciation resources may not work")
+
+    # Initialize database connections
+    db_success = DatabaseService.initialize()
+    if db_success:
+        logger.info("Database connections initialized successfully")
+    else:
+        logger.warning("Failed to initialize databases - dictionary data may not work")
 
     yield
 
+    # Cleanup
     logger.info("Shutting down MDD API service...")
+    DatabaseService.close()
 
 
 def create_app() -> FastAPI:
